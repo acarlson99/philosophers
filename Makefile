@@ -1,6 +1,6 @@
 FLAGS = -Wall -Wextra -Werror
 CFLAGS = $(FLAGS) -I inc/
-LDFLAGS = $(FLAGS)
+LDFLAGS = $(FLAGS) -lpthread
 
 SRC = src/
 CFILES = main.c
@@ -11,7 +11,7 @@ NAME = philo
 all: $(NAME)
 
 $(NAME): $(OFILES)
-	$(CC) $(OFILES) -o $(NAME)
+	$(CC) $(LDFLAGS) $(OFILES) -o $(NAME)
 
 clean:
 	rm -f $(OFILES)
@@ -20,3 +20,6 @@ fclean: clean
 	rm -f $(BIN) $(NAME)
 
 re: fclean all
+
+dbg: FLAGS = -Wall -Wextra -g
+dbg: re
