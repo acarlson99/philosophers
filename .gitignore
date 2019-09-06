@@ -50,3 +50,28 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Mac junk
+.DS_Store
+._.DS_STORE
+._*
+
+# NFS junk
+.nfs.*
+
+# Python stuff
+__pycache__/
+
+# CLion
+.idea/
+
+# VSCode
+.vscode/*
+
+# tags
+tags
+TAGS
+
+# project
+
+philo
