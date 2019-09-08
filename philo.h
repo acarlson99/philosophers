@@ -6,6 +6,6 @@
 # define EAT_T 1
 # define REST_T 1
 # define THINK_T 1
-# define TIMEOUT 120
+# define TIMEOUT 8
 
 #endif

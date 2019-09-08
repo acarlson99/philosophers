@@ -1,17 +1,14 @@
 FLAGS = -Wall -Wextra -Werror
-CFLAGS = $(FLAGS) -I inc/
+CFLAGS = $(FLAGS)
 LDFLAGS = $(FLAGS) -lpthread
 
-SRC = src/
-CFILES = main.c
-CSRCS = $(addprefix $(SRC), $(CFILES))
-OFILES = $(CSRCS:.c=.o)
+CFILES = philo.c
+OFILES = $(CFILES:.c=.o)
 NAME = philo
 
 all: $(NAME)
 
 $(NAME): $(OFILES)
-	$(CC) $(LDFLAGS) $(OFILES) -o $(NAME)
 
 clean:
 	rm -f $(OFILES)
