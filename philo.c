@@ -102,6 +102,13 @@ void	*overseer(void *arg) {
 	return (NULL);
 }
 
+#define WINDOWWIDTH 1000
+#define WINDOWHEIGHT 1000
+
+#define PHILO_SIZE 75
+
+#include <SDL2/SDL.h>
+
 int main(int argc, char **argv) {
 	int		num;
 	if (argc != 2)
@@ -125,9 +132,62 @@ int main(int argc, char **argv) {
 	}
 	pthread_t overseer_id;
 	pthread_create(&overseer_id, NULL, overseer, &(struct s_thing){num, philos});
+
+	SDL_Window *window;
+	SDL_Renderer *renderer;
+	SDL_Surface *circle;
+	SDL_Texture *circle_texture;
+	SDL_Event event;
+
+	// SDL stuff
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
+		return (1);
+	}
+
+	if (SDL_CreateWindowAndRenderer(WINDOWWIDTH, WINDOWHEIGHT, SDL_WINDOW_RESIZABLE|SDL_WINDOW_SHOWN, &window, &renderer)) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window and renderer: %s", SDL_GetError());
+		return (1);
+	}
+	// TODO: validate that circle was created
+	circle = SDL_LoadBMP("assets/circle.bmp");
+	circle_texture = SDL_CreateTextureFromSurface(renderer, circle);
+
 	running = 1;
-	sleep(TIMEOUT);
+	while (1) {
+		SDL_PollEvent(&event);
+		if (event.type == SDL_QUIT) {
+			break;
+		}
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+		SDL_RenderCopy(renderer, circle_texture, NULL, &(SDL_Rect){WINDOWWIDTH/4,WINDOWHEIGHT/4,WINDOWWIDTH/2,WINDOWWIDTH/2});
+		for (int ii = 0; ii < num; ++ii) {
+			float	deg = 2 * M_PI / num * ii;
+			// TODO: generalize this.  Use macros.  Base size on WINDOWWIDTH or circle dimensions or smth
+			float	x = cos(deg) * 225;
+			float	y = sin(deg) * 225;
+			SDL_RenderCopy(renderer, circle_texture, NULL, &(SDL_Rect){x + WINDOWWIDTH/2 - (PHILO_SIZE / 2),y + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2),PHILO_SIZE,PHILO_SIZE});
+		}
+		// draw_state(renderer, state);
+		SDL_RenderPresent(renderer);
+	}
+
+	SDL_DestroyRenderer(renderer);
+	// TODO: probably need to kill circle and circle_texture
+	// SDL_DestroySurface(circle);
+	SDL_DestroyWindow(window);
+
+	SDL_Quit();
 
 	for (int ii = 0; ii < num; ++ii)
 		pthread_mutex_destroy(&mutexes[ii]);
+	return 0;
+
 }
+
+/*
+philosopher to rad
+rad to deg
+y = sin(deg); x = cos(deg)
+*/

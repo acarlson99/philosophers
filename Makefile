@@ -1,6 +1,6 @@
 FLAGS = -Wall -Wextra -Werror
-CFLAGS = $(FLAGS)
-LDFLAGS = $(FLAGS) -lpthread
+CFLAGS = $(FLAGS) -I ~/.brew/include/ -D_THREAD_SAFE 
+LDFLAGS = $(FLAGS) -lpthread -L ~/.brew/lib/ -lSDL2
 
 CFILES = philo.c
 OFILES = $(CFILES:.c=.o)
