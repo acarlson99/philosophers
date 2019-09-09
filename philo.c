@@ -80,8 +80,8 @@ void	*overseer(void *arg) {
 	struct s_thing *thing = arg;
 	t_philo *philos = thing->philos;
 	int num = thing->num;
-	time_t old = time(NULL);
 	while (!running);
+	time_t old = time(NULL);
 	while (running) {
 		while (time(NULL) > old)
 		{
