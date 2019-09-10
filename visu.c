@@ -120,7 +120,8 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 				break ;
 			default:
 				// quit if time up and any key pressed
-				done = !(time(NULL) - start < TIMEOUT);
+				if (!(event.key.keysym.sym & (1<<30)))
+					done = !(time(NULL) - start < TIMEOUT);
 			}
 		}
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
