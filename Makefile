@@ -2,7 +2,7 @@ FLAGS = -Wall -Wextra -Werror
 CFLAGS = $(FLAGS) -I ~/.brew/include/ -D_THREAD_SAFE 
 LDFLAGS = $(FLAGS) -lpthread -L ~/.brew/lib/ -lSDL2
 
-CFILES = philo.c
+CFILES = philo.c visu.c
 OFILES = $(CFILES:.c=.o)
 NAME = philo
 
