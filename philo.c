@@ -118,7 +118,7 @@ void	*overseer(void *arg) {
 #define TABLE_HEIGHT (WINDOWHEIGHT/2)
 
 #define HBAR_WIDTH 25
-#define HBAR_HEIGHT 50
+#define HBAR_HEIGHT 75
 
 #define PHILO_SIZE (75)
 #define PHILO_CENTER_OFF (TABLE_WIDTH/2.1)
@@ -132,6 +132,9 @@ void	draw_hbar(SDL_Renderer *renderer, t_philo *philo, float x, float y) {
 	(void)philo;
 	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
 	SDL_RenderFillRect(renderer, &(SDL_Rect){x - HBAR_WIDTH, y - HBAR_HEIGHT, HBAR_WIDTH, HBAR_HEIGHT});
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	float height = (float)philo->life / (float)MAX_LIFE * (float)HBAR_HEIGHT;
+	SDL_RenderFillRect(renderer, &(SDL_Rect){x - HBAR_WIDTH, y - HBAR_HEIGHT + (HBAR_HEIGHT - height), HBAR_WIDTH, height});
 }
 
 void	draw_philos(SDL_Renderer *renderer, SDL_Texture *philo_texture, int num, t_philo *philos) {
@@ -180,6 +183,7 @@ int	display_visu(int num, t_philo *philos) {
 			switch (event.key.keysym.sym) {
 			case SDLK_q:
 				done = 1;
+				break ;
 			default:
 				// quit if time up and any key pressed
 				done = !(time(NULL) - start < TIMEOUT);
