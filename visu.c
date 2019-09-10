@@ -35,7 +35,7 @@ void	draw_hbar(SDL_Renderer *renderer, t_philo *philo, float x, float y) {
 	SDL_RenderFillRect(renderer, &(SDL_Rect){x - HBAR_WIDTH, y - HBAR_HEIGHT + (HBAR_HEIGHT - height), HBAR_WIDTH, height});
 }
 
-void	draw_state(SDL_Renderer *renderer, SDL_Texture *philo_texture, int num, t_philo *philos, t_stick *sticks) {
+void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture *philo_texture, int num, t_philo *philos, t_stick *sticks) {
 	for (int ii = 0; ii < num; ++ii) {
 		// TODO: add beards
 		float x = philos[ii].x * PHILO_CENTER_OFF + WINDOWWIDTH/2 - (PHILO_SIZE / 2);
@@ -62,11 +62,11 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *philo_texture, int num, t_p
 		}
 		
 		// place plate in front of philosopher
-		SDL_SetTextureColorMod(philo_texture, 100, 0, 0);
+		SDL_SetTextureColorMod(circle_texture, 200, 100, 100);
 		x = philos[ii].x * PLATE_CENTER_OFF + WINDOWWIDTH/2 - (PHILO_SIZE / 2);
 		y = philos[ii].y * PLATE_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2);
-		SDL_RenderCopy(renderer, philo_texture, NULL, &(SDL_Rect){x, y, PHILO_SIZE, PHILO_SIZE});
-		SDL_SetTextureColorMod(philo_texture, 255, 255, 255);
+		SDL_RenderCopy(renderer, circle_texture, NULL, &(SDL_Rect){x, y, PHILO_SIZE, PHILO_SIZE});
+		SDL_SetTextureColorMod(circle_texture, 255, 255, 255);
 
 		// draw chopsticks
 	}
@@ -77,6 +77,8 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 	SDL_Renderer *renderer;
 	SDL_Surface *circle;
 	SDL_Texture *circle_texture;
+	SDL_Surface *philo;
+	SDL_Texture *philo_texture;
 	SDL_Event event;
 
 	// SDL stuff
@@ -95,6 +97,13 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 		return (VISU_ERR);
 	}
 	circle_texture = SDL_CreateTextureFromSurface(renderer, circle);
+
+	philo = SDL_LoadBMP("assets/philo.bmp");
+	if (!philo) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load bmp: %s", SDL_GetError());
+		return (VISU_ERR);
+	}
+	philo_texture = SDL_CreateTextureFromSurface(renderer, philo);
 
 	running = 1;
 	time_t start = time(NULL);
@@ -117,7 +126,7 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, circle_texture, NULL, &(SDL_Rect){TABLE_POS_LEFT, TABLE_POS_TOP, TABLE_WIDTH, TABLE_HEIGHT});
-		draw_state(renderer, circle_texture, num, philos, sticks);
+		draw_state(renderer, circle_texture, philo_texture, num, philos, sticks);
 		// TODO: draw chopsticks
 		SDL_RenderPresent(renderer);
 	}
@@ -125,6 +134,8 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 	SDL_DestroyRenderer(renderer);
 	SDL_FreeSurface(circle);
 	SDL_DestroyTexture(circle_texture);
+	SDL_FreeSurface(philo);
+	SDL_DestroyTexture(philo_texture);
 	SDL_DestroyWindow(window);
 
 	SDL_Quit();
