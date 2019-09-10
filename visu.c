@@ -62,9 +62,11 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *philo_texture, int num, t_p
 		}
 		
 		// place plate in front of philosopher
+		SDL_SetTextureColorMod(philo_texture, 100, 0, 0);
 		x = philos[ii].x * PLATE_CENTER_OFF + WINDOWWIDTH/2 - (PHILO_SIZE / 2);
 		y = philos[ii].y * PLATE_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2);
 		SDL_RenderCopy(renderer, philo_texture, NULL, &(SDL_Rect){x, y, PHILO_SIZE, PHILO_SIZE});
+		SDL_SetTextureColorMod(philo_texture, 255, 255, 255);
 
 		// draw chopsticks
 	}
