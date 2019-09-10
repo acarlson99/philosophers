@@ -95,8 +95,8 @@ int main(int argc, char **argv) {
 		num = 7;
 	else
 		num = atoi(argv[1]);
-	if (num > 100) {
-		printf("Dude, chill.  %d is way too many philosophers\n", num);
+	if (num > 100 || num < 2) {
+		printf("Dude, chill.  %d is a ridiculous number of philosophers\n", num);
 		return (1);
 	}
 	t_stick		sticks[num];

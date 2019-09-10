@@ -42,7 +42,7 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture
 
 		// health
 		// draw_hbar(renderer, &philos[ii], (philos[ii].x < 0 ? x - HBAR_WIDTH * 2 : x + HBAR_WIDTH + PHILO_SIZE), y);
-		draw_hbar(renderer, &philos[ii], (philos[ii].x < 0 ? x - HBAR_WIDTH * 2 - (PHILO_SIZE / 2) : x + HBAR_WIDTH + PHILO_SIZE - (PHILO_SIZE / 2)), y - (PHILO_SIZE / 2));
+		draw_hbar(renderer, &philos[ii], (philos[ii].x < 0 ? x - HBAR_WIDTH * 2 - PHILO_SIZE / 2: x + HBAR_WIDTH + PHILO_SIZE / 2), y - (PHILO_SIZE / 2));
 
 		// place plate in front of philosopher
 		SDL_SetTextureColorMod(circle_texture, 200, 100, 100);
