@@ -42,6 +42,10 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *philo_texture, int num, t_p
 		float y = philos[ii].y * PHILO_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2);
 		SDL_RenderCopy(renderer, philo_texture, NULL, &(SDL_Rect){x, y, PHILO_SIZE, PHILO_SIZE});
 
+		// health
+		SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+		draw_hbar(renderer, &philos[ii], philos[ii].x < 0 ? x : x + HBAR_WIDTH + PHILO_SIZE, y);
+
 		// chopsticks
 		SDL_SetRenderDrawColor(renderer, 255, 100, 100, 255);
 		if (sticks[ii].holder == ii) {
@@ -49,16 +53,14 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *philo_texture, int num, t_p
 		}
 		else if (sticks[ii].holder == -1) {
 			// TODO: draw sticks better
-			SDL_RenderDrawLine(renderer, x, y, 100, 100);
+			x = ((philos[ii].x + philos[(ii + 1) % num].x) / 2) * PHILO_CENTER_OFF + WINDOWWIDTH/2 - (PHILO_SIZE / 2);
+			y = ((philos[ii].y + philos[(ii + 1) % num].y) / 2) * PHILO_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2);
+			SDL_RenderDrawLine(renderer, x, y, WINDOWWIDTH/2, WINDOWHEIGHT/2);
 		}
 		if (sticks[(ii + 1) % num].holder == ii) {
 			SDL_RenderDrawLine(renderer, x, y, x+100, y-100);
 		}
 		
-		// health
-		SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-		draw_hbar(renderer, &philos[ii], philos[ii].x < 0 ? x : x + HBAR_WIDTH + PHILO_SIZE, y);
-
 		// place plate in front of philosopher
 		x = philos[ii].x * PLATE_CENTER_OFF + WINDOWWIDTH/2 - (PHILO_SIZE / 2);
 		y = philos[ii].y * PLATE_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2);
