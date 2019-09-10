@@ -95,6 +95,10 @@ int main(int argc, char **argv) {
 		num = 7;
 	else
 		num = atoi(argv[1]);
+	if (num > 100) {
+		printf("Dude, chill.  %d is way too many philosophers\n", num);
+		return (1);
+	}
 	t_stick		sticks[num];
 	pthread_t ids[num];
 	pthread_mutex_t mutexes[num];
@@ -112,6 +116,7 @@ int main(int argc, char **argv) {
 	for (int ii = 0; ii < num; ++ii) {
 		float deg = 2 * M_PI / num * ii;
 		philos[ii] = (t_philo){ii, &sticks[ii], &sticks[(ii+1) % num], NULL, NULL, none, MAX_LIFE, cos(deg), sin(deg)};
+		printf("%d %f %f\n", philos[ii].id, philos[ii].x, philos[ii].y);
 		pthread_create(&ids[ii], NULL, philosopher, &philos[ii]);
 		pthread_detach(ids[ii]);
 	}
