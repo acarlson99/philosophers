@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include "philo.h"
 
-#define WINDOWWIDTH 1000
-#define WINDOWHEIGHT 1000
+#define WINDOWWIDTH 750
+#define WINDOWHEIGHT 750
 
 #define TABLE_POS_LEFT (WINDOWWIDTH/4)
 #define TABLE_POS_TOP (WINDOWHEIGHT/4)
@@ -26,10 +26,19 @@
 
 #define VISU_ERR 1
 
+#define HBAR_COLOR 141, 8, 1
+#define HBAR_BKG_COLOR 231, 46, 43
+#define BKG_COLOR 244, 213, 141
+#define TABLE_COLOR 239, 235, 206
+#define CHOPSTICK_COLOR 163, 163, 128
+#define PLATE_COLOR 255, 255, 255
+
 void	draw_hbar(SDL_Renderer *renderer, t_philo *philo, float x, float y) {
-	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+	/* SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); */
+	SDL_SetRenderDrawColor(renderer, HBAR_BKG_COLOR, 255);
 	SDL_RenderFillRect(renderer, &(SDL_Rect){x, y, HBAR_WIDTH, HBAR_HEIGHT});
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	/* SDL_SetRenderDrawColor(renderer, 200, 170, 120, 255); */
+	SDL_SetRenderDrawColor(renderer, HBAR_COLOR, 255);
 	float height = (float)philo->life / (float)MAX_LIFE * (float)HBAR_HEIGHT;
 	SDL_RenderFillRect(renderer, &(SDL_Rect){x, y + (HBAR_HEIGHT - height), HBAR_WIDTH, height});
 }
@@ -45,14 +54,14 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture
 		draw_hbar(renderer, &philos[ii], (philos[ii].x < 0 ? x - HBAR_WIDTH * 2 - PHILO_SIZE / 2: x + HBAR_WIDTH + PHILO_SIZE / 2), y - (PHILO_SIZE / 2));
 
 		// place plate in front of philosopher
-		SDL_SetTextureColorMod(circle_texture, 200, 100, 100);
+		SDL_SetTextureColorMod(circle_texture, PLATE_COLOR);
 		float plate_x = philos[ii].x * PLATE_CENTER_OFF + WINDOWWIDTH/2 - (PHILO_SIZE / 2);
 		float plate_y = philos[ii].y * PLATE_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2);
 		SDL_RenderCopy(renderer, circle_texture, NULL, &(SDL_Rect){plate_x, plate_y, PHILO_SIZE, PHILO_SIZE});
 		SDL_SetTextureColorMod(circle_texture, 255, 255, 255);
 
 		// chopsticks
-		SDL_SetRenderDrawColor(renderer, 255, 100, 100, 255);
+		SDL_SetRenderDrawColor(renderer, CHOPSTICK_COLOR, 255);
 		if (sticks[ii].holder == ii) {
 			SDL_RenderDrawLine(renderer, x, y, x+100, y-100);
 		}
@@ -83,7 +92,7 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 		return (VISU_ERR);
 	}
 
-	if (SDL_CreateWindowAndRenderer(WINDOWWIDTH, WINDOWHEIGHT, SDL_WINDOW_RESIZABLE|SDL_WINDOW_SHOWN, &window, &renderer)) {
+	if (SDL_CreateWindowAndRenderer(WINDOWWIDTH, WINDOWHEIGHT, SDL_WINDOW_SHOWN, &window, &renderer)) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window and renderer: %s", SDL_GetError());
 		return (VISU_ERR);
 	}
@@ -121,9 +130,11 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 					done = !(time(NULL) - start < TIMEOUT);
 			}
 		}
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
+		SDL_SetRenderDrawColor(renderer, BKG_COLOR, 255);
+		SDL_RenderFillRect(renderer, NULL);
 		// draw table
+		SDL_SetTextureColorMod(circle_texture, TABLE_COLOR);
 		SDL_RenderCopy(renderer, circle_texture, NULL, &(SDL_Rect){TABLE_POS_LEFT, TABLE_POS_TOP, TABLE_WIDTH, TABLE_HEIGHT});
 		draw_state(renderer, circle_texture, philo_texture, num, philos, sticks);
 		SDL_RenderPresent(renderer);
