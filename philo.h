@@ -35,6 +35,9 @@ typedef struct s_philo {
 	enum e_state	state;
 	unsigned		life;
 
+	struct s_philo *left_neighbor;
+	struct s_philo *right_neighbor;
+
 	// GUI stuff
 	float			x;
 	float			y;

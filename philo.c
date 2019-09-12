@@ -43,15 +43,21 @@ void	philo_rest(t_philo *philo) {
 // TODO: THIS DEADLOCKS PROBABLY.  FIX
 void *philosopher(void *arg) {
 	t_philo *philo = arg;
+	int first = 1;
 
 	while (!running);
 	// TODO: only run until time is up, then party
 	while (running) {
 
+		if (first && philo->left_neighbor->id < philo->id)
+			usleep(1000);
 		philo_eat(philo);
 
+		if (!running)
+			break ;
 		philo_rest(philo);
 
+		first ^= first;
 	}
 	return (NULL);
 }
@@ -67,10 +73,11 @@ void	*overseer(void *arg) {
 	t_philo *philos = thing->philos;
 	int num = thing->num;
 	while (!running);
-	time_t old = time(NULL) + 1;
+	time_t start = time(NULL);
+	time_t old = start + 1;
 	while (running) {
 		// TODO: only run until time is up, then party
-		while (time(NULL) > old)
+		while (running && time(NULL) > old)
 		{
 			++old;
 			for (int ii = 0; ii < num; ++ii) {
@@ -83,6 +90,8 @@ void	*overseer(void *arg) {
 					printf("OH NO THREAD %d DIED\n", ii);
 				}
 			}
+			if (time(NULL) - start > TIMEOUT)
+				running = 0;
 		}
 		usleep(100000);
 	}
@@ -91,6 +100,7 @@ void	*overseer(void *arg) {
 
 int main(int argc, char **argv) {
 	int		num;
+	srand(time(NULL));
 	if (argc != 2)
 		num = 7;
 	else
@@ -115,7 +125,7 @@ int main(int argc, char **argv) {
 	printf("Begin\n");
 	for (int ii = 0; ii < num; ++ii) {
 		float deg = 2 * M_PI / num * ii;
-		philos[ii] = (t_philo){ii, &sticks[ii], &sticks[(ii+1) % num], NULL, NULL, none, MAX_LIFE, cos(deg), sin(deg)};
+		philos[ii] = (t_philo){rand(), &sticks[ii], &sticks[(ii+1) % num], NULL, NULL, none, MAX_LIFE, &philos[(ii-1 + num) % num], &philos[(ii+1) % num], cos(deg), sin(deg)};
 		printf("%d %f %f\n", philos[ii].id, philos[ii].x, philos[ii].y);
 		pthread_create(&ids[ii], NULL, philosopher, &philos[ii]);
 		pthread_detach(ids[ii]);

@@ -62,7 +62,7 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture
 
 		// chopsticks
 		SDL_SetRenderDrawColor(renderer, CHOPSTICK_COLOR, 255);
-		if (sticks[ii].holder == ii) {
+		if (sticks[ii].holder == philos[ii].id) {
 			SDL_RenderDrawLine(renderer, x, y, x+100, y-100);
 		}
 		else if (sticks[ii].holder == -1) {
@@ -71,7 +71,7 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture
 			y = ((philos[ii].y + philos[(ii + 1) % num].y) / 2) * PHILO_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2);
 			SDL_RenderDrawLine(renderer, x, y, WINDOWWIDTH/2, WINDOWHEIGHT/2);
 		}
-		if (sticks[(ii + 1) % num].holder == ii) {
+		if (sticks[(ii + 1) % num].holder == philos[ii].id) {
 			SDL_RenderDrawLine(renderer, x, y, x-100, y-100);
 		}
 	}
@@ -111,7 +111,6 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 	philo_texture = SDL_CreateTextureFromSurface(renderer, philo);
 
 	running = 1;
-	time_t start = time(NULL);
 	int done = 0;
 	while (!done) {
 		SDL_PollEvent(&event);
@@ -127,7 +126,7 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 			default:
 				// quit if time up and any key pressed
 				if (!(event.key.keysym.sym & (1<<30)))
-					done = !(time(NULL) - start < TIMEOUT);
+					done = !running;
 			}
 		}
 		SDL_RenderClear(renderer);
