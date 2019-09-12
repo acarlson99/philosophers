@@ -40,20 +40,22 @@ void	philo_rest(t_philo *philo) {
 	philo->state = none;
 }
 
-// TODO: THIS DEADLOCKS PROBABLY.  FIX
 void *philosopher(void *arg) {
 	t_philo *philo = arg;
-	int first = 1;
+	register int first = 1;
 
-	while (!running);
-	// TODO: only run until time is up, then party
-	while (running) {
+	while (running == run_wait);
+	while (running == run_go) {
 
-		if (first && philo->left_neighbor->id < philo->id)
-			usleep(1000);
+		if (first && philo->left_neighbor->id < philo->id) {
+			philo_rest(philo);
+			if (running == run_done)
+				break ;
+		}
+
 		philo_eat(philo);
 
-		if (!running)
+		if (running == run_done)
 			break ;
 		philo_rest(philo);
 
@@ -62,22 +64,21 @@ void *philosopher(void *arg) {
 	return (NULL);
 }
 
-struct s_thing {
+struct s_arg {
 	int num;
 	t_philo *philos;
 };
 
-// TODO: handle death better
 void	*overseer(void *arg) {
-	struct s_thing *thing = arg;
+	struct s_arg *thing = arg;
 	t_philo *philos = thing->philos;
 	int num = thing->num;
-	while (!running);
+	while (running == run_wait);
 	time_t start = time(NULL);
 	time_t old = start + 1;
-	while (running) {
-		// TODO: only run until time is up, then party
-		while (running && time(NULL) > old)
+	while (running == run_go) {
+		// make sure to run for every second
+		while (running == run_go && time(NULL) > old)
 		{
 			++old;
 			for (int ii = 0; ii < num; ++ii) {
@@ -86,12 +87,16 @@ void	*overseer(void *arg) {
 				printf("LIFE %d: %d DOING %d\n", ii, philos[ii].life, philos[ii].state);
 				if (philos[ii].life <= 0) {
 					philos[ii].state = dead;
-					running = 0;
+					running = run_done;
 					printf("OH NO THREAD %d DIED\n", ii);
 				}
 			}
-			if (time(NULL) - start > TIMEOUT)
-				running = 0;
+			if (time(NULL) - start > TIMEOUT) {
+				running = run_done;
+				printf("TIMEOUT\n");
+			}
+			else if (running == run_done)
+				return (NULL);
 		}
 		usleep(100000);
 	}
@@ -99,7 +104,8 @@ void	*overseer(void *arg) {
 }
 
 int main(int argc, char **argv) {
-	int		num;
+	register int		num;
+
 	srand(time(NULL));
 	if (argc != 2)
 		num = 7;
@@ -109,12 +115,13 @@ int main(int argc, char **argv) {
 		printf("Dude, chill.  %d is a ridiculous number of philosophers\n", num);
 		return (1);
 	}
+
 	t_stick		sticks[num];
 	pthread_t ids[num];
 	pthread_mutex_t mutexes[num];
 	t_philo			philos[num];
 
-	running = 0;
+	running = run_wait;
 
 	for (int ii = 0; ii < num; ++ii)
 		pthread_mutex_init(&mutexes[ii], NULL);
@@ -130,12 +137,16 @@ int main(int argc, char **argv) {
 		pthread_create(&ids[ii], NULL, philosopher, &philos[ii]);
 		pthread_detach(ids[ii]);
 	}
+
 	pthread_t overseer_id;
-	pthread_create(&overseer_id, NULL, overseer, &(struct s_thing){num, philos});
+	pthread_create(&overseer_id, NULL, overseer, &(struct s_arg){num, philos});
+	pthread_detach(overseer_id);
 
 	display_visu(num, philos, sticks);
 
-	for (int ii = 0; ii < num; ++ii)
+	for (int ii = 0; ii < num; ++ii) {
+		printf("%d\n", philos[ii].state);
 		pthread_mutex_destroy(&mutexes[ii]);
+	}
 	return 0;
 }

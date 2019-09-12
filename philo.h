@@ -16,7 +16,12 @@ enum e_state {
 	rest,
 	think,
 	dead,
-	dance,
+};
+
+enum e_run {
+	run_wait,
+	run_go,
+	run_done,
 };
 
 int running;

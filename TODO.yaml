@@ -1,9 +1,11 @@
-Algorithm:
-  - Make better
-  - Handle death, timeout, etc. better
-  - Party when done eating
-
 Visualizer:
   - Fix chopstick display
-  - Make pretty
   - Party when done eating
+
+DONE:
+  - Algorithm:
+    - Make better
+    - Handle death, timeout, etc. better
+    - Party when done eating
+  - Visualizer:
+    - Make pretty
