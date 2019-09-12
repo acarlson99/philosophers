@@ -15,7 +15,6 @@ enum e_state {
 	eat,
 	rest,
 	think,
-	dead,
 };
 
 enum e_run {
@@ -33,6 +32,7 @@ typedef struct s_stick {
 
 typedef struct s_philo {
 	int				id;
+	int				dead;
 	t_stick *left;
 	t_stick *right;
 	t_stick *left_hand;

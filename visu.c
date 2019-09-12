@@ -33,7 +33,9 @@
 #define STICK_COLOR 163, 163, 128
 #define PLATE_COLOR 255, 255, 255
 
-#define STICK_ROT 50.0
+#define STICK_ROT 0
+#define STICK_WIDTH 30
+#define STICK_HEIGHT PHILO_SIZE
 
 void	draw_hbar(SDL_Renderer *renderer, t_philo *philo, float x, float y) {
 	SDL_SetRenderDrawColor(renderer, HBAR_BKG_COLOR, 255);
@@ -47,9 +49,13 @@ void	draw_hbar(SDL_Renderer *renderer, t_philo *philo, float x, float y) {
 
 void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture *philo_texture, SDL_Texture *stick_texture, int num, t_philo *philos, t_stick *sticks) {
 	for (int ii = 0; ii < num; ++ii) {
+		// lad
 		float x = philos[ii].x * PHILO_CENTER_OFF + WINDOWWIDTH/2;
 		float y = philos[ii].y * PHILO_CENTER_OFF + WINDOWHEIGHT / 2;
+		if (philos[ii].dead)
+			SDL_SetTextureColorMod(philo_texture, 0,0,0);
 		SDL_RenderCopy(renderer, philo_texture, NULL, &(SDL_Rect){x - (PHILO_SIZE / 2), y - (PHILO_SIZE / 2), PHILO_SIZE, PHILO_SIZE});
+		SDL_SetTextureColorMod(philo_texture, 255, 255, 255);
 
 		// health
 		draw_hbar(renderer, &philos[ii], (philos[ii].x < 0 ? x - HBAR_WIDTH * 2 - PHILO_SIZE / 2: x + HBAR_WIDTH + PHILO_SIZE / 2), y - (PHILO_SIZE / 2));
@@ -62,17 +68,17 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture
 		SDL_SetTextureColorMod(circle_texture, 255, 255, 255);
 
 		// sticks
-		if (sticks[ii].holder == philos[ii].id) {
-			SDL_RenderCopyEx(renderer, stick_texture, NULL, &(SDL_Rect){x - PHILO_SIZE, y - PHILO_SIZE/2, PHILO_SIZE, PHILO_SIZE}, STICK_ROT, NULL, SDL_FLIP_NONE);
-		}
-		else if (sticks[ii].holder == -1) {
+		if (sticks[ii].holder == -1) {
 			// TODO: draw sticks better
 			x = ((philos[ii].x + philos[(ii + 1) % num].x) / 2) * PHILO_CENTER_OFF + WINDOWWIDTH/2 - (PHILO_SIZE / 2);
 			y = ((philos[ii].y + philos[(ii + 1) % num].y) / 2) * PHILO_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2);
-			SDL_RenderCopy(renderer, stick_texture, NULL, &(SDL_Rect){x, y, PHILO_SIZE, PHILO_SIZE});
+			SDL_RenderCopyEx(renderer, stick_texture, NULL, &(SDL_Rect){x, y, STICK_WIDTH, STICK_HEIGHT}, STICK_ROT, NULL, SDL_FLIP_NONE);
+		}
+		else if (sticks[ii].holder == philos[ii].id) {
+			SDL_RenderCopyEx(renderer, stick_texture, NULL, &(SDL_Rect){x - PHILO_SIZE + STICK_WIDTH/2, y - PHILO_SIZE/2, STICK_WIDTH, STICK_HEIGHT}, STICK_ROT, NULL, SDL_FLIP_NONE);
 		}
 		if (sticks[(ii + 1) % num].holder == philos[ii].id) {
-			SDL_RenderCopyEx(renderer, stick_texture, NULL, &(SDL_Rect){x, y - PHILO_SIZE/2, PHILO_SIZE, PHILO_SIZE}, STICK_ROT, NULL, SDL_FLIP_NONE);
+			SDL_RenderCopyEx(renderer, stick_texture, NULL, &(SDL_Rect){x + STICK_WIDTH/2, y - PHILO_SIZE/2, STICK_WIDTH, STICK_HEIGHT}, STICK_ROT, NULL, SDL_FLIP_NONE);
 		}
 	}
 }
@@ -80,12 +86,16 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture
 int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+
 	SDL_Surface *circle;
 	SDL_Texture *circle_texture;
+
 	SDL_Surface *philo;
 	SDL_Texture *philo_texture;
+
 	SDL_Surface *stick;
 	SDL_Texture *stick_texture;
+
 	SDL_Event event;
 
 	// SDL stuff
@@ -111,6 +121,7 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 		return (VISU_ERR);
 	}
 	philo_texture = SDL_CreateTextureFromSurface(renderer, philo);
+
 	stick = SDL_LoadBMP("assets/stick.bmp");
 	if (!stick) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load bmp: %s", SDL_GetError());

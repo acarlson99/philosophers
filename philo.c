@@ -15,10 +15,12 @@ void	philo_eat(t_philo *philo) {
 	philo->right->holder = philo->id;
 	philo->right_hand = philo->right;
 
-	printf("%d EATING\n", philo->id);
-	philo->state = eat;
-	sleep(EAT_T);
-	philo->life = MAX_LIFE;
+	if (running) {
+		printf("%d EATING\n", philo->id);
+		philo->state = eat;
+		sleep(EAT_T);
+		/* philo->life = MAX_LIFE; */
+	}
 
 	philo->left_hand = NULL;
 	philo->left->holder = -1;
@@ -42,24 +44,21 @@ void	philo_rest(t_philo *philo) {
 
 void *philosopher(void *arg) {
 	t_philo *philo = arg;
-	register int first = 1;
+	register int action = 0;
+
+	void (*funcs[])(t_philo*) = {
+		philo_eat,
+		philo_rest,
+	};
+
+	if (philo->left_neighbor->id < philo->id) {
+		action = 1;
+	}
 
 	while (running == run_wait);
 	while (running == run_go) {
-
-		if (first && philo->left_neighbor->id < philo->id) {
-			philo_rest(philo);
-			if (running == run_done)
-				break ;
-		}
-
-		philo_eat(philo);
-
-		if (running == run_done)
-			break ;
-		philo_rest(philo);
-
-		first ^= first;
+		funcs[action](philo);
+		action = (action + 1) % (sizeof(funcs) / sizeof(*funcs));
 	}
 	return (NULL);
 }
@@ -84,9 +83,11 @@ void	*overseer(void *arg) {
 			for (int ii = 0; ii < num; ++ii) {
 				if (philos[ii].state != eat)
 					--philos[ii].life;
+				else
+					philos[ii].life = MAX_LIFE;
 				printf("LIFE %d: %d DOING %d\n", ii, philos[ii].life, philos[ii].state);
 				if (philos[ii].life <= 0) {
-					philos[ii].state = dead;
+					philos[ii].dead = 1;
 					running = run_done;
 					printf("OH NO THREAD %d DIED\n", ii);
 				}
@@ -132,7 +133,10 @@ int main(int argc, char **argv) {
 	printf("Begin\n");
 	for (int ii = 0; ii < num; ++ii) {
 		float deg = 2 * M_PI / num * ii;
-		philos[ii] = (t_philo){rand(), &sticks[ii], &sticks[(ii+1) % num], NULL, NULL, none, MAX_LIFE, &philos[(ii-1 + num) % num], &philos[(ii+1) % num], cos(deg), sin(deg)};
+		int rnum = rand();
+		while (rnum == -1)
+			rnum = rand();
+		philos[ii] = (t_philo){rnum, 0, &sticks[ii], &sticks[(ii+1) % num], NULL, NULL, none, MAX_LIFE, &philos[(ii-1 + num) % num], &philos[(ii+1) % num], cos(deg), sin(deg)};
 		printf("%d %f %f\n", philos[ii].id, philos[ii].x, philos[ii].y);
 		pthread_create(&ids[ii], NULL, philosopher, &philos[ii]);
 		pthread_detach(ids[ii]);
@@ -144,9 +148,7 @@ int main(int argc, char **argv) {
 
 	display_visu(num, philos, sticks);
 
-	for (int ii = 0; ii < num; ++ii) {
-		printf("%d\n", philos[ii].state);
+	for (int ii = 0; ii < num; ++ii)
 		pthread_mutex_destroy(&mutexes[ii]);
-	}
 	return 0;
 }
