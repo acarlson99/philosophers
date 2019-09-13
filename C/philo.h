@@ -1,5 +1,4 @@
-#ifndef PHILO_H
-# define PHILO_H
+#pragma once
 
 # include <pthread.h>
 
@@ -8,7 +7,7 @@
 # define EAT_T 1
 # define REST_T 1
 # define THINK_T 1
-# define TIMEOUT 15
+# define TIMEOUT 30
 
 enum e_state {
 	none,
@@ -49,5 +48,3 @@ typedef struct s_philo {
 } t_philo;
 
 int	display_visu(int num, t_philo *philos, t_stick *sticks);
-
-#endif

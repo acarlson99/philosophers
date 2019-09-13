@@ -1,14 +1,18 @@
-#include <unistd.h>
-#include <time.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <stdio.h>
 #include "philo.h"
 #include <math.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
-#define printf(...)
+#ifdef DEBUG
+#define dbg_printf(...) printf(__VA_ARGS__)
+#else
+#define dbg_printf(...)
+#endif
 
-void	philo_eat(t_philo *philo) {
+void philo_eat(t_philo *philo) {
 	pthread_mutex_lock(philo->left->m);
 	philo->left->holder = philo->id;
 	philo->left_hand = philo->left;
@@ -18,7 +22,7 @@ void	philo_eat(t_philo *philo) {
 	philo->right_hand = philo->right;
 
 	if (running) {
-		printf("%d EATING\n", philo->id);
+		dbg_printf("%d EATING\n", philo->id);
 		philo->state = eat;
 		sleep(EAT_T);
 	}
@@ -31,15 +35,15 @@ void	philo_eat(t_philo *philo) {
 	philo->right->holder = -1;
 	pthread_mutex_unlock(philo->right->m);
 
-	printf("%d DONE EATING\n", philo->id);
+	dbg_printf("%d DONE EATING\n", philo->id);
 	philo->state = none;
 }
 
-void	philo_rest(t_philo *philo) {
-	printf("%d SLEEPING\n", philo->id);
+void philo_rest(t_philo *philo) {
+	dbg_printf("%d SLEEPING\n", philo->id);
 	philo->state = rest;
 	sleep(REST_T);
-	printf("%d DONE SLEEPING\n", philo->id);
+	dbg_printf("%d DONE SLEEPING\n", philo->id);
 	philo->state = none;
 }
 
@@ -47,7 +51,7 @@ void *philosopher(void *arg) {
 	t_philo *philo = arg;
 	register int action = 0;
 
-	void (*funcs[])(t_philo*) = {
+	void (*funcs[])(t_philo *) = {
 		philo_eat,
 		philo_rest,
 	};
@@ -56,7 +60,8 @@ void *philosopher(void *arg) {
 		action = 1;
 	}
 
-	while (running == run_wait);
+	while (running == run_wait)
+		;
 	while (running == run_go) {
 		funcs[action](philo);
 		action = (action + 1) % (sizeof(funcs) / sizeof(*funcs));
@@ -69,35 +74,35 @@ struct s_arg {
 	t_philo *philos;
 };
 
-void	*overseer(void *arg) {
+void *overseer(void *arg) {
 	struct s_arg *thing = arg;
 	t_philo *philos = thing->philos;
 	int num = thing->num;
-	while (running == run_wait);
+	while (running == run_wait)
+		;
 	time_t start = time(NULL);
 	time_t old = start + 1;
 	while (running == run_go) {
 		// make sure to run for every second
-		while (running == run_go && time(NULL) > old)
-		{
+		while (running == run_go && time(NULL) > old) {
 			++old;
 			for (int ii = 0; ii < num; ++ii) {
 				if (philos[ii].state != eat)
 					--philos[ii].life;
 				else
 					philos[ii].life = MAX_LIFE;
-				printf("LIFE %d: %d DOING %d\n", ii, philos[ii].life, philos[ii].state);
+				dbg_printf("LIFE %d: %d DOING %d\n", ii, philos[ii].life,
+						   philos[ii].state);
 				if (philos[ii].life <= 0) {
 					philos[ii].dead = 1;
 					running = run_done;
-					printf("OH NO THREAD %d DIED\n", ii);
+					dbg_printf("OH NO THREAD %d DIED\n", ii);
 				}
 			}
 			if (time(NULL) - start > TIMEOUT) {
 				running = run_done;
-				printf("TIMEOUT\n");
-			}
-			else if (running == run_done)
+				dbg_printf("TIMEOUT\n");
+			} else if (running == run_done)
 				return (NULL);
 		}
 		usleep(100000);
@@ -106,7 +111,7 @@ void	*overseer(void *arg) {
 }
 
 int main(int argc, char **argv) {
-	register int		num;
+	register int num;
 
 	srand(time(NULL));
 	if (argc != 2)
@@ -114,14 +119,15 @@ int main(int argc, char **argv) {
 	else
 		num = atoi(argv[1]);
 	if (num > 100 || num < 2) {
-		printf("Dude, chill.  %d is a ridiculous number of philosophers\n", num);
+		fprintf(stderr, "Dude, chill. %d is a ridiculous number of philosophers\n",
+				num);
 		return (1);
 	}
 
-	t_stick		sticks[num];
+	t_stick sticks[num];
 	pthread_t ids[num];
 	pthread_mutex_t mutexes[num];
-	t_philo			philos[num];
+	t_philo philos[num];
 
 	running = run_wait;
 
@@ -131,14 +137,25 @@ int main(int argc, char **argv) {
 	for (int ii = 0; ii < num; ++ii)
 		sticks[ii] = (t_stick){&mutexes[ii], -1};
 
-	printf("Begin\n");
+	dbg_printf("Begin\n");
 	for (int ii = 0; ii < num; ++ii) {
 		float deg = 2 * M_PI / num * ii;
 		int rnum = rand();
 		while (rnum == -1)
 			rnum = rand();
-		philos[ii] = (t_philo){rnum, 0, &sticks[ii], &sticks[(ii+1) % num], NULL, NULL, none, MAX_LIFE, &philos[(ii-1 + num) % num], &philos[(ii+1) % num], cos(deg), sin(deg)};
-		printf("%d %f %f\n", philos[ii].id, philos[ii].x, philos[ii].y);
+		philos[ii] = (t_philo){rnum,
+							   0,
+							   &sticks[ii],
+							   &sticks[(ii + 1) % num],
+							   NULL,
+							   NULL,
+							   none,
+							   MAX_LIFE,
+							   &philos[(ii - 1 + num) % num],
+							   &philos[(ii + 1) % num],
+							   cos(deg),
+							   sin(deg)};
+		dbg_printf("%d %f %f\n", philos[ii].id, philos[ii].x, philos[ii].y);
 		pthread_create(&ids[ii], NULL, philosopher, &philos[ii]);
 		pthread_detach(ids[ii]);
 	}

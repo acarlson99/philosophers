@@ -26,5 +26,5 @@ fclean: clean
 
 re: fclean all
 
-dbg: FLAGS = -Wall -Wextra -g
+dbg: FLAGS = -Wall -Wextra -g -DDEBUG
 dbg: re
