@@ -13,6 +13,7 @@
 #endif
 
 void philo_eat(t_philo *philo) {
+  philo->state = hold;
   pthread_mutex_lock(philo->left->m);
   philo->left->holder = philo->id;
   philo->left_hand = philo->left;
