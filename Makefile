@@ -3,18 +3,26 @@ CFLAGS = $(FLAGS) -I ~/.brew/include/ -D_THREAD_SAFE
 LDFLAGS = $(FLAGS) -lpthread -L ~/.brew/lib/ -lSDL2
 
 CFILES = philo.c visu.c
-OFILES = $(CFILES:.c=.o)
-NAME = philo
+OFILES = $(addprefix C/, $(CFILES:.c=.o))
+CNAME = philo_c
 
-all: $(NAME)
+GONAME = philo_go
 
-$(NAME): $(OFILES)
+all: $(CNAME) $(GONAME)
+
+$(CNAME): $(OFILES)
+	$(CC) $(LDFLAGS) -o $(CNAME) $(OFILES)
+
+$(GONAME):
+	cd Go/ && go build
+	- ln -s Go/philosopher $(GONAME)
 
 clean:
 	rm -f $(OFILES)
 
 fclean: clean
-	rm -f $(BIN) $(NAME)
+	rm -f $(CNAME) $(GONAME) Go/philosopher
+	rm -rf *.dSYM
 
 re: fclean all
 

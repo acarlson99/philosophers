@@ -1,6 +1,5 @@
 Visualizer:
-  - Fix chopstick display.  Rotate to center
-  - Party when done eating
+  - Clean up code
 
 DONE:
   - Algorithm:
@@ -9,3 +8,5 @@ DONE:
     - Party when done eating
   - Visualizer:
     - Make pretty
+    - Fix chopstick display.  Rotate to center
+    - Party when done eating

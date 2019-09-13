@@ -54,6 +54,8 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture
 		float y = philos[ii].y * PHILO_CENTER_OFF + WINDOWHEIGHT / 2;
 		if (philos[ii].dead)
 			SDL_SetTextureColorMod(philo_texture, 0,0,0);
+		else if (running == run_done)
+			SDL_SetTextureColorMod(philo_texture, 124, 252, 0);
 		SDL_RenderCopy(renderer, philo_texture, NULL, &(SDL_Rect){x - (PHILO_SIZE / 2), y - (PHILO_SIZE / 2), PHILO_SIZE, PHILO_SIZE});
 		SDL_SetTextureColorMod(philo_texture, 255, 255, 255);
 
@@ -69,13 +71,10 @@ void	draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture, SDL_Texture
 
 		// sticks
 		if (sticks[ii].holder == -1) {
-			// TODO: draw sticks better
 			x = ((philos[ii].x + philos[(ii + 1) % num].x) / 2) * PHILO_CENTER_OFF + WINDOWWIDTH / 2 - (PHILO_SIZE / 2) + (STICK_WIDTH/2);
 			y = ((philos[ii].y + philos[(ii + 1) % num].y) / 2) * PHILO_CENTER_OFF + WINDOWHEIGHT / 2 - (PHILO_SIZE / 2) + (STICK_WIDTH/2);
 			float vec_x = -(WINDOWWIDTH/2) + (x + STICK_WIDTH/2);
 			float vec_y = -(WINDOWHEIGHT/2) + (y + STICK_HEIGHT/2);
-			/* float vec_x = 0.5; */
-			/* float vec_y = 0.5; */
 			SDL_RenderCopyEx(renderer, stick_texture, NULL, &(SDL_Rect){x, y, STICK_WIDTH, STICK_HEIGHT}, STICK_ROT + (atan2(vec_y, vec_x) * 180 / M_PI - 90), NULL, SDL_FLIP_NONE);
 		}
 		else if (sticks[ii].holder == philos[ii].id) {
@@ -149,7 +148,7 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 				done = 1;
 				break ;
 			default:
-				// quit if time up and any key pressed
+				// quit if time up and any non-special (ctrl alt...) key pressed
 				if (!(event.key.keysym.sym & (1<<30)))
 					done = (running==run_done);
 			}

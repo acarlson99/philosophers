@@ -6,6 +6,8 @@
 #include "philo.h"
 #include <math.h>
 
+#define printf(...)
+
 void	philo_eat(t_philo *philo) {
 	pthread_mutex_lock(philo->left->m);
 	philo->left->holder = philo->id;
@@ -19,7 +21,6 @@ void	philo_eat(t_philo *philo) {
 		printf("%d EATING\n", philo->id);
 		philo->state = eat;
 		sleep(EAT_T);
-		/* philo->life = MAX_LIFE; */
 	}
 
 	philo->left_hand = NULL;
