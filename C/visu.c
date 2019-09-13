@@ -140,8 +140,6 @@ int display_visu(int num, t_philo *philos, t_stick *sticks) {
   SDL_Surface *stick;
   SDL_Texture *stick_texture;
 
-  SDL_Event event;
-
   // SDL stuff
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s",
@@ -181,8 +179,20 @@ int display_visu(int num, t_philo *philos, t_stick *sticks) {
   SDL_SetTextureColorMod(stick_texture, STICK_COLOR);
 
   running = run_go;
+  int start = 0;
+  int old = 0;
+  int delta = 0;
+  int msPerFrame = 1000 / 30; // ms / fps
   int done = 0;
+  SDL_Event event;
   while (!done) {
+    if (!start)
+      start = SDL_GetTicks();
+    else
+      delta = old - start;
+    if (delta < msPerFrame)
+      SDL_Delay(msPerFrame - delta);
+
     SDL_PollEvent(&event);
     if (event.type == SDL_QUIT) {
       done = 1;
@@ -204,6 +214,9 @@ int display_visu(int num, t_philo *philos, t_stick *sticks) {
     draw_state(renderer, circle_texture, philo_texture, stick_texture, num,
                philos, sticks);
     SDL_RenderPresent(renderer);
+
+    start = old;
+    old = SDL_GetTicks();
   }
 
   // teardown
