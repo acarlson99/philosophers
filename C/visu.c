@@ -98,9 +98,9 @@ void draw_state(SDL_Renderer *renderer, SDL_Texture *circle_texture,
 
 		// sticks
 		if (sticks[ii].holder == -1) {
-			x = ((philos[ii].x + philos[(ii + 1) % num].x) / 2) * PHILO_CENTER_OFF +
+			x = ((philos[ii].x + philos[(ii - 1 + num) % num].x) / 2) * PHILO_CENTER_OFF +
 				WINDOWWIDTH / 2 - (PHILO_SIZE / 2) + (STICK_WIDTH / 2);
-			y = ((philos[ii].y + philos[(ii + 1) % num].y) / 2) * PHILO_CENTER_OFF +
+			y = ((philos[ii].y + philos[(ii - 1 + num) % num].y) / 2) * PHILO_CENTER_OFF +
 				WINDOWHEIGHT / 2 - (PHILO_SIZE / 2) + (STICK_WIDTH / 2);
 			float vec_x = -(WINDOWWIDTH / 2) + (x + STICK_WIDTH / 2);
 			float vec_y = -(WINDOWHEIGHT / 2) + (y + STICK_HEIGHT / 2);

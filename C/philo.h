@@ -7,7 +7,7 @@
 # define EAT_T 1
 # define REST_T 1
 # define THINK_T 1
-# define TIMEOUT 30
+# define TIMEOUT 15
 
 enum e_state {
 	none,
