@@ -1,5 +1,5 @@
+Algorithm:
 Visualizer:
-  - Clean up code
 
 DONE:
   - Algorithm:
@@ -10,3 +10,4 @@ DONE:
     - Make pretty
     - Fix chopstick display.  Rotate to center
     - Party when done eating
+    - Clean up code
