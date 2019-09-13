@@ -144,7 +144,7 @@ int	display_visu(int num, t_philo *philos, t_stick *sticks) {
 			switch (event.key.keysym.sym) {
 			case SDLK_ESCAPE:
 			case SDLK_q:
-				running = run_done;
+				/* running = run_done; */
 				done = 1;
 				break ;
 			default:
