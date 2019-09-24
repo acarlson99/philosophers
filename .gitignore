@@ -74,8 +74,8 @@ TAGS
 # project
 
 .#*
-philo_c
-philo_go
+/philo_c
+/philo_go
 /*.bmp
 Go/go\.sum
 Go/philosopher
