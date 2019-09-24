@@ -20,7 +20,7 @@ clean:
 	rm -f $(OFILES)
 
 fclean: clean
-	rm -f $(CNAME) $(GONAME)
+	rm -f $(CNAME) $(GONAME) Go/philosopher
 	rm -rf *.dSYM
 
 re: fclean all
