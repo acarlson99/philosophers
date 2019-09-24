@@ -14,13 +14,14 @@ $(CNAME): $(OFILES)
 	$(CC) $(LDFLAGS) -o $(CNAME) $(OFILES)
 
 $(GONAME):
-	go build -o $(GONAME) ./Go/
+	cd Go/ && go build
+	- ln -s Go/philosopher $(GONAME)
 
 clean:
 	rm -f $(OFILES)
 
 fclean: clean
-	rm -f $(CNAME) $(GONAME)
+	rm -f $(CNAME) $(GONAME) Go/philosopher
 	rm -rf *.dSYM
 
 re: fclean all
