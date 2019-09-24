@@ -43,7 +43,6 @@
 *.pdb
 
 # Kernel Module Compile Results
-*.mod*
 *.cmd
 .tmp_versions/
 modules.order
@@ -80,3 +79,4 @@ philo_go
 /*.bmp
 Go/go\.sum
 Go/philosopher
+go\.sum

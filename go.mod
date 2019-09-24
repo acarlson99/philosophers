@@ -1,4 +1,4 @@
-module github.com/ncollie42/philosopher
+module github.com/acarlson99/philosophers
 
 require (
 	github.com/gizak/termui/v3 v3.1.0
