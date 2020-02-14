@@ -1,6 +1,6 @@
 FLAGS = -Wall -Wextra -Werror
 CFLAGS = $(FLAGS) -I ~/.brew/include/ -D_THREAD_SAFE 
-LDFLAGS = $(FLAGS) -lpthread -L ~/.brew/lib/ -lSDL2
+LDFLAGS = $(FLAGS) -lpthread -lSDL2 -lm
 
 CFILES = philo.c visu.c
 OFILES = $(addprefix cmd/philo_c/, $(CFILES:.c=.o))
